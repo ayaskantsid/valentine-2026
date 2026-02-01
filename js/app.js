@@ -46,13 +46,6 @@ console.log(startDate, endDate);
 // VIEW LOADER
 // =====================================================
 
-// async function loadView(path) {
-//   const res = await fetch(path);
-//   if (!res.ok) throw new Error("View not found");
-//   const html = await res.text();
-//   app.innerHTML = html;
-// }
-
 async function loadView(path) {
   // Fade out current view
   const existingView = app.querySelector(".view");
@@ -93,7 +86,7 @@ async function renderCountdown() {
 
     if (diff <= 0) {
       clearInterval(interval);
-      renderToday();
+      renderSecret();
       return;
     }
 
@@ -101,6 +94,57 @@ async function renderCountdown() {
     hEl.textContent = Math.floor((diff / (1000 * 60 * 60)) % 24);
     mEl.textContent = Math.floor((diff / (1000 * 60)) % 60);
     sEl.textContent = Math.floor((diff / 1000) % 60);
+  }, 1000);
+}
+
+// =====================================================
+// SECRET VIEW
+// =====================================================
+
+async function renderSecret() {
+  await loadView("views/secret/secret.html");
+  renderSecretCountdown();
+
+  // Automatically transition to daily view after 20 seconds
+  setTimeout(() => {
+    renderToday();
+  }, 20000);
+}
+
+// =====================================================
+// SECRET COUNTDOWN
+// =====================================================
+
+function renderSecretCountdown() {
+  const countdownHTML = `
+    <div class="daily-countdown">
+      <p>Continuing in:</p>
+      <div class="countdown-mini">
+        <div class="time-item">
+          <span id="secret-seconds">20</span>
+          <small>s</small>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const viewElement = app.querySelector(".view");
+  if (viewElement) {
+    viewElement.innerHTML += countdownHTML;
+  }
+
+  let secondsLeft = 20;
+
+  // Update countdown every second
+  const interval = setInterval(() => {
+    secondsLeft--;
+
+    const sEl = document.getElementById("secret-seconds");
+    if (sEl) sEl.textContent = secondsLeft;
+
+    if (secondsLeft <= 0) {
+      clearInterval(interval);
+    }
   }, 1000);
 }
 
@@ -116,6 +160,7 @@ async function renderToday() {
 
   try {
     await loadView(path);
+    renderDailyCountdown();
   } catch {
     app.innerHTML = `
       <h1>Hey Tamanna</h1>
@@ -126,6 +171,77 @@ async function renderToday() {
       </p>
     `;
   }
+}
+
+// =====================================================
+// DAILY COUNTDOWN
+// =====================================================
+
+function renderDailyCountdown() {
+  const now = new Date();
+  const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+  
+  // Get tomorrow's date in IST
+  const tomorrow = new Date(istTime);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  // Calculate next midnight in IST, then convert to UTC for comparison
+  const nextMidnightIST = new Date(Date.UTC(
+    tomorrow.getUTCFullYear(),
+    tomorrow.getUTCMonth(),
+    tomorrow.getUTCDate(),
+    0, 0, 0
+  ));
+  const nextMidnightUTC = new Date(nextMidnightIST.getTime() - (5.5 * 60 * 60 * 1000));
+
+  const countdownHTML = `
+    <div class="daily-countdown">
+      <p>New content coming in:</p>
+      <div class="countdown-mini">
+        <div class="time-item">
+          <span id="next-hours">0</span>
+          <small>h</small>
+        </div>
+        <div class="time-item">
+          <span id="next-minutes">0</span>
+          <small>m</small>
+        </div>
+        <div class="time-item">
+          <span id="next-seconds">0</span>
+          <small>s</small>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const viewElement = app.querySelector(".view");
+  if (viewElement) {
+    viewElement.innerHTML += countdownHTML;
+  }
+
+  // Update countdown every second
+  const interval = setInterval(() => {
+    const currentUTC = getNowUTC();
+    const diff = nextMidnightUTC - currentUTC;
+
+    if (diff <= 0) {
+      clearInterval(interval);
+      renderToday();
+      return;
+    }
+
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    const hEl = document.getElementById("next-hours");
+    const mEl = document.getElementById("next-minutes");
+    const sEl = document.getElementById("next-seconds");
+
+    if (hEl) hEl.textContent = hours;
+    if (mEl) mEl.textContent = minutes;
+    if (sEl) sEl.textContent = seconds;
+  }, 1000);
 }
 
 // =====================================================
