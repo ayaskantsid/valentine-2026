@@ -1,0 +1,141 @@
+const app = document.getElementById("app");
+
+// =====================================================
+// TIMEZONE SAFE UTILITIES (IST)
+// =====================================================
+
+// Returns current UTC time
+function getNowUTC() {
+  return new Date();
+}
+
+// Returns a Date object representing 00:00 IST for a given day,
+// but stored as UTC (safe for comparisons)
+function getISTMidnightAsUTC(year, month, day) {
+  // IST = UTC +05:30, so IST midnight (00:00) = UTC 18:30 previous day
+  const istMidnight = new Date(Date.UTC(year, month, day, 0, 0, 0));
+  return new Date(istMidnight.getTime() - (5.5 * 60 * 60 * 1000));
+}
+
+// Returns MM-DD key based on current IST date
+function getTodayKeyInIST() {
+  const now = new Date();
+  const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+
+  const month = String(istTime.getMonth() + 1).padStart(2, "0");
+  const day = String(istTime.getDate()).padStart(2, "0");
+
+  return `${month}-${day}`;
+}
+
+// =====================================================
+// DATE SETUP (IST-BASED)
+// =====================================================
+
+const nowUTC = getNowUTC();
+const year = nowUTC.getUTCFullYear();
+
+// 🔒 CHANGE THESE WHEN NEEDED
+const startDate = getISTMidnightAsUTC(year, 1, 2);  // Feb 2, 00:00 IST
+const endDate   = getISTMidnightAsUTC(year, 1, 8);  // Feb 8, 00:00 IST
+
+console.log(startDate, endDate);
+
+
+// =====================================================
+// VIEW LOADER
+// =====================================================
+
+// async function loadView(path) {
+//   const res = await fetch(path);
+//   if (!res.ok) throw new Error("View not found");
+//   const html = await res.text();
+//   app.innerHTML = html;
+// }
+
+async function loadView(path) {
+  // Fade out current view
+  const existingView = app.querySelector(".view");
+  if (existingView) {
+    existingView.classList.remove("show");
+    await new Promise(resolve => setTimeout(resolve, 600));
+  }
+
+  const res = await fetch(path);
+  if (!res.ok) throw new Error("View not found");
+
+  const html = await res.text();
+
+  app.innerHTML = `<div class="view">${html}</div>`;
+
+  // Fade in new view
+  requestAnimationFrame(() => {
+    const newView = app.querySelector(".view");
+    newView.classList.add("show");
+  });
+}
+
+// =====================================================
+// COUNTDOWN VIEW
+// =====================================================
+
+async function renderCountdown() {
+  await loadView("views/countdown/countdown.html");
+
+  const dEl = document.getElementById("days");
+  const hEl = document.getElementById("hours");
+  const mEl = document.getElementById("minutes");
+  const sEl = document.getElementById("seconds");
+
+  const interval = setInterval(() => {
+    const currentUTC = getNowUTC();
+    const diff = startDate - currentUTC;
+
+    if (diff <= 0) {
+      clearInterval(interval);
+      renderToday();
+      return;
+    }
+
+    dEl.textContent = Math.floor(diff / (1000 * 60 * 60 * 24));
+    hEl.textContent = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    mEl.textContent = Math.floor((diff / (1000 * 60)) % 60);
+    sEl.textContent = Math.floor((diff / 1000) % 60);
+  }, 1000);
+}
+
+// =====================================================
+// DAY VIEW
+// =====================================================
+
+async function renderToday() {
+  const key = getTodayKeyInIST();
+  console.log(key);
+  
+  const path = `views/days/${key}.html`;
+
+  try {
+    await loadView(path);
+  } catch {
+    app.innerHTML = `
+      <h1>Hey Tamanna</h1>
+      <h3>I had a feeling you'd return.</h3> <br />
+      <p>
+        <br />
+        I am leaving this ❤️ here for you just so that you know how much I love you.
+      </p>
+    `;
+  }
+}
+
+// =====================================================
+// APP ENTRY POINT
+// =====================================================
+
+if (nowUTC < startDate) {
+  renderCountdown();
+} else {
+    setTimeout(() => {
+    renderToday();
+    }, 800);
+}
