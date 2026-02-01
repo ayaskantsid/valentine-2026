@@ -63,3 +63,38 @@ p {
   opacity: 1;
   transform: translateY(0);
 }
+
+.daily-countdown {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(242, 242, 242, 0.1);
+}
+
+.daily-countdown p {
+  font-size: 0.875rem;
+  opacity: 0.7;
+  margin-bottom: 12px;
+}
+
+.countdown-mini {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.time-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.time-item span {
+  font-size: 1.275rem;
+  font-weight: 500;
+}
+
+.time-item small {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  margin-top: 2px;
+}
