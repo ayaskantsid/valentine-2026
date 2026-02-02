@@ -53,7 +53,7 @@ const year = nowUTC.getUTCFullYear();
 
 // 🔒 CHANGE THESE WHEN NEEDED
 const startDate = getISTMidnightAsUTC(year, 1, 3);  // Feb 3, 00:00 IST
-const endDate   = getISTMidnightAsUTC(year, 1, 8);  // Feb 8, 00:00 IST
+const endDate   = getISTMidnightAsUTC(year, 1, 14);  // Feb 14, 00:00 IST
 
 console.log(startDate, endDate);
 
@@ -71,7 +71,7 @@ async function loadView(path) {
   }
 
   const res = await fetch(path);
-  if (!res.ok) throw new Error("View not found");
+  if (!res.ok) throw new Error("Ended");
 
   const html = await res.text();
 
@@ -201,13 +201,16 @@ async function renderToday() {
     
     renderDailyCountdown();
   } catch {
+    // Show fallback message with proper styling
     app.innerHTML = `
-      <h1>Hey Tamanna</h1>
-      <h3>I had a feeling you'd return.</h3> <br />
-      <p>
-        <br />
-        I am leaving this ❤️ here for you just so that you know how much I love you.
-      </p>
+      <div class="view show valentines-day">
+        <h1>Hey Tamanna</h1>
+        <h3>I had a feeling you'd return.</h3> <br />
+        <p>
+          <br />
+          I am leaving this ❤️ here for you just so that you know how much I love you.
+        </p>
+      </div>
     `;
   }
 }
