@@ -28,6 +28,22 @@ function getTodayKeyInIST() {
   return `${month}-${day}`;
 }
 
+// Returns the CSS class for the current day's theme
+function getDayThemeClass() {
+  const key = getTodayKeyInIST();
+  const dayMap = {
+    "02-03": "rose-day",          // Rose Day
+    "02-04": "propose-day",       // Propose Day
+    "02-05": "chocolate-day",     // Chocolate Day
+    "02-06": "teddy-day",         // Teddy Day
+    "02-07": "promise-day",       // Promise Day
+    "02-08": "hug-day",           // Hug Day
+    "02-09": "kiss-day",          // Kiss Day
+    "02-14": "valentines-day",    // Valentine's Day
+  };
+  return dayMap[key] || "";
+}
+
 // =====================================================
 // DATE SETUP (IST-BASED)
 // =====================================================
@@ -36,7 +52,7 @@ const nowUTC = getNowUTC();
 const year = nowUTC.getUTCFullYear();
 
 // 🔒 CHANGE THESE WHEN NEEDED
-const startDate = getISTMidnightAsUTC(year, 1, 2);  // Feb 2, 00:00 IST
+const startDate = getISTMidnightAsUTC(year, 1, 3);  // Feb 3, 00:00 IST
 const endDate   = getISTMidnightAsUTC(year, 1, 8);  // Feb 8, 00:00 IST
 
 console.log(startDate, endDate);
@@ -74,6 +90,12 @@ async function loadView(path) {
 
 async function renderCountdown() {
   await loadView("views/countdown/countdown.html");
+  
+  // Apply countdown day gradient to the view
+  const viewElement = app.querySelector(".view");
+  if (viewElement) {
+    viewElement.classList.add("countdown-day");
+  }
 
   const dEl = document.getElementById("days");
   const hEl = document.getElementById("hours");
@@ -103,6 +125,13 @@ async function renderCountdown() {
 
 async function renderSecret() {
   await loadView("views/secret/secret.html");
+  
+  // Apply secret screen gradient to the view
+  const viewElement = app.querySelector(".view");
+  if (viewElement) {
+    viewElement.classList.add("secret-screen");
+  }
+  
   renderSecretCountdown();
 
   // Automatically transition to daily view after 20 seconds
@@ -160,6 +189,16 @@ async function renderToday() {
 
   try {
     await loadView(path);
+    
+    // Apply day theme class to the view
+    const viewElement = app.querySelector(".view");
+    if (viewElement) {
+      const themeClass = getDayThemeClass();
+      if (themeClass) {
+        viewElement.classList.add(themeClass);
+      }
+    }
+    
     renderDailyCountdown();
   } catch {
     app.innerHTML = `
@@ -196,7 +235,7 @@ function renderDailyCountdown() {
 
   const countdownHTML = `
     <div class="daily-countdown">
-      <p>New content coming in:</p>
+      <p>Next comes something warm:</p>
       <div class="countdown-mini">
         <div class="time-item">
           <span id="next-hours">0</span>
@@ -253,5 +292,6 @@ if (nowUTC < startDate) {
 } else {
     setTimeout(() => {
     renderToday();
+    // renderSecret();
     }, 800);
 }
