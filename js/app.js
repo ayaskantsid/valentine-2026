@@ -11,6 +11,7 @@ function getNowUTC() {
 
 // Returns a Date object representing 00:00 IST for a given day,
 // but stored as UTC (safe for comparisons)
+// Parameters: year (YYYY), month (0-indexed, 0=Jan), day (1-31)
 function getISTMidnightAsUTC(year, month, day) {
   // IST = UTC +05:30, so IST midnight (00:00) = UTC 18:30 previous day
   const istMidnight = new Date(Date.UTC(year, month, day, 0, 0, 0));
@@ -63,6 +64,9 @@ console.log(startDate, endDate);
 // =====================================================
 
 async function loadView(path) {
+  // Clear all active intervals before transitioning
+  clearActiveIntervals();
+  
   // Fade out current view
   const existingView = app.querySelector(".view");
   if (existingView) {
@@ -117,6 +121,7 @@ async function renderCountdown() {
     mEl.textContent = Math.floor((diff / (1000 * 60)) % 60);
     sEl.textContent = Math.floor((diff / 1000) % 60);
   }, 1000);
+  activeIntervals.push(interval);
 }
 
 // =====================================================
@@ -173,8 +178,10 @@ function renderSecretCountdown() {
 
     if (secondsLeft <= 0) {
       clearInterval(interval);
+      activeIntervals = activeIntervals.filter(id => id !== interval);
     }
   }, 1000);
+  activeIntervals.push(interval);
 }
 
 // =====================================================
@@ -283,11 +290,21 @@ function renderDailyCountdown() {
     if (mEl) mEl.textContent = minutes;
     if (sEl) sEl.textContent = seconds;
   }, 1000);
+  activeIntervals.push(interval);
 }
 
 // =====================================================
 // APP ENTRY POINT
 // =====================================================
+
+// Store active intervals for cleanup
+let activeIntervals = [];
+
+// Clear all active intervals before starting new view
+function clearActiveIntervals() {
+  activeIntervals.forEach(id => clearInterval(id));
+  activeIntervals = [];
+}
 
 if (nowUTC < startDate) {
   renderCountdown();
