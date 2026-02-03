@@ -22,8 +22,8 @@ function getTodayKeyInIST() {
   const now = new Date();
   const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
 
-  const month = String(istTime.getMonth() + 1).padStart(2, "0");
-  const day = String(istTime.getDate()).padStart(2, "0");
+  const month = String(istTime.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(istTime.getUTCDate()).padStart(2, "0");
 
   return `${month}-${day}`;
 }
@@ -221,17 +221,16 @@ async function renderToday() {
 
 function renderDailyCountdown() {
   const now = new Date();
-  const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
   
-  // Get tomorrow's date in IST
-  const tomorrow = new Date(istTime);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  // Get tomorrow's IST date using UTC methods consistently
+  const istNow = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+  const tomorrowIST = new Date(istNow.getTime() + (24 * 60 * 60 * 1000));
   
   // Calculate next midnight in IST, then convert to UTC for comparison
   const nextMidnightIST = new Date(Date.UTC(
-    tomorrow.getUTCFullYear(),
-    tomorrow.getUTCMonth(),
-    tomorrow.getUTCDate(),
+    tomorrowIST.getUTCFullYear(),
+    tomorrowIST.getUTCMonth(),
+    tomorrowIST.getUTCDate(),
     0, 0, 0
   ));
   const nextMidnightUTC = new Date(nextMidnightIST.getTime() - (5.5 * 60 * 60 * 1000));
