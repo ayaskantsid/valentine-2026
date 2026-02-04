@@ -31,9 +31,9 @@ h1 {
 }
 
 p {
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.6;
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
 .countdown {
@@ -81,7 +81,7 @@ p {
 }
 
 .daily-countdown {
-  padding-top: 24px;
+  padding-top: 18px;
   border-top: 1px solid rgba(242, 242, 242, 0.1);
 }
 
