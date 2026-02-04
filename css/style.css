@@ -127,6 +127,13 @@ p {
   animation: fadeUp 0.8s ease-out both;
 }
 
+.next-message {
+  font-size: 0.9rem;
+  opacity: 0.5;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -276,7 +283,7 @@ p {
     ),
     radial-gradient(
       circle at bottom right,
-      rgba(30, 41, 59, 0.25),
+      rgba(35, 102, 203, 0.25),
       transparent 55%
     ),
     #0b0b0f !important;
@@ -293,6 +300,22 @@ p {
     radial-gradient(
       circle at bottom right,
       rgba(170, 150, 90, 0.18),
+      transparent 55%
+    ),
+    #0b0b0f !important;
+}
+
+/* Later Days - Green & Purple */
+.later-days {
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(27, 78, 186, 0.28),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(185, 54, 128, 0.32),
       transparent 55%
     ),
     #0b0b0f !important;

@@ -33,16 +33,33 @@ function getTodayKeyInIST() {
 function getDayThemeClass() {
   const key = getTodayKeyInIST();
   const dayMap = {
-    "02-03": "rose-day",          // Rose Day
-    "02-04": "propose-day",       // Propose Day
-    "02-05": "chocolate-day",     // Chocolate Day
-    "02-06": "teddy-day",         // Teddy Day
-    "02-07": "promise-day",       // Promise Day
-    "02-08": "hug-day",           // Hug Day
-    "02-09": "kiss-day",          // Kiss Day
+    "02-07": "rose-day",          // Rose Day
+    "02-08": "propose-day",       // Propose Day
+    "02-09": "chocolate-day",     // Chocolate Day
+    "02-10": "teddy-day",         // Teddy Day
+    "02-11": "promise-day",       // Promise Day
+    "02-12": "hug-day",           // Hug Day
+    "02-13": "kiss-day",          // Kiss Day
     "02-14": "valentines-day",    // Valentine's Day
   };
   return dayMap[key] || "";
+}
+
+function getNextDayMessage() {
+  const key = getTodayKeyInIST();
+  console.log(key);
+  
+  const messageMap = {
+    "02-07": "Something romantic is waiting…",
+    "02-08": "Something sweet is almost here…",
+    "02-09": "Something warm and cozy is next…",
+    "02-10": "A promise is waiting to be made…",
+    "02-11": "An embrace is getting closer…",
+    "02-12": "Something we won’t forget…",
+    "02-13": "It’s almost our day…",
+    "02-14": "",
+  };
+  return messageMap[key] || "Something special is waiting…";
 }
 
 // =====================================================
@@ -53,7 +70,7 @@ const nowUTC = getNowUTC();
 const year = nowUTC.getUTCFullYear();
 
 // 🔒 CHANGE THESE WHEN NEEDED
-const startDate = getISTMidnightAsUTC(year, 1, 3);  // Feb 3, 00:00 IST
+const startDate = getISTMidnightAsUTC(year, 1, 7);  // Feb 7, 00:00 IST
 const endDate   = getISTMidnightAsUTC(year, 1, 14);  // Feb 14, 00:00 IST
 
 console.log(startDate, endDate);
@@ -190,7 +207,6 @@ function renderSecretCountdown() {
 
 async function renderToday() {
   const key = getTodayKeyInIST();
-  console.log(key);
   
   const path = `views/days/${key}.html`;
 
@@ -206,16 +222,19 @@ async function renderToday() {
       }
     }
     
+    if(key === "02-14") {
+      return;
+    }
     renderDailyCountdown();
   } catch {
     // Show fallback message with proper styling
     app.innerHTML = `
-      <div class="view show valentines-day">
+      <div class="view show later-days">
         <h1>Hey Tamanna</h1>
         <h3>I had a feeling you'd return.</h3> <br />
         <p>
           <br />
-          I am leaving this ❤️ here for you just so that you know how much I love you.
+          I am leaving this ❤️ for you just so that you know how much I love you.
         </p>
       </div>
     `;
@@ -244,7 +263,7 @@ function renderDailyCountdown() {
 
   const countdownHTML = `
     <div class="daily-countdown">
-      <p>Next comes something warm:</p>
+      <div class="next-message">${getNextDayMessage()}</div>
       <div class="countdown-mini">
         <div class="time-item">
           <span id="next-hours">0</span>
@@ -311,6 +330,5 @@ if (nowUTC < startDate) {
 } else {
     setTimeout(() => {
     renderToday();
-    // renderSecret();
     }, 800);
 }
