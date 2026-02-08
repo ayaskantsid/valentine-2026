@@ -234,7 +234,7 @@ async function renderToday() {
         <h3>I had a feeling you'd return.</h3> <br />
         <p>
           <br />
-          I am leaving this ❤️ for you just so that you know how much I love you.
+          I am leaving this ❤️ for you. A gentle reminder of how much I love you.
         </p>
       </div>
     `;
